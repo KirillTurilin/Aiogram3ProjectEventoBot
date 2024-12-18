@@ -28,10 +28,21 @@ class Form(StatesGroup):
     promo_link = State()
 
 
+class Question(StatesGroup):
+    get_question = State()
+
+
+class UpdateBase(StatesGroup):
+    get_id = State()
+    get_promo_link = State()
+    get_price = State()
+
+
 class Update(StatesGroup):
     get_fullname = State()
     get_city = State()
     get_phone = State()
+
 
 class ADMIN(StatesGroup):
     search_user = State()
@@ -113,6 +124,7 @@ async def cmd_start(message: Message, state: FSMContext, bot: Bot):
     else:
         await message.answer("Выберите раздел 👇", reply_markup=kb.startprofi_kb)
 
+
 @router.callback_query(F.data == "search user")
 async def cmd_search_user(callback: CallbackQuery, state: FSMContext):
     await state.set_state(ADMIN.search_user)
@@ -134,7 +146,6 @@ async def get_search_user(message: Message, state: FSMContext):
         await message.answer(msg, parse_mode="HTML")
     except Exception:
         await message.answer("Не найденно специалистов с таким айди")
-
 
 
 @router.callback_query(F.data == "trustedpartners")
@@ -324,11 +335,12 @@ async def newfullname(message: Message, bot: Bot):
     new = message.text
     user_id = message.from_user.id
     await request.update_profi_fullname(new, user_id)
-    await bot.send_message(cf.ADMIN_ID, f"Специалист с айди = <b>{user_id}</b> поменял Имя и Фамилию на {new}")
+    await bot.send_message(cf.ADMIN_ID, f"Специалист с айди = <b>{user_id}</b> поменял Имя и Фамилию на {new}", parse_mode="HTML")
     await message.answer("🤖Имя и Фамилия изменины успешно",
                          reply_markup=InlineKeyboardMarkup(inline_keyboard=
                                                            [[InlineKeyboardButton(text="Меню",
                                                                                   callback_data="Startprofi")]]))
+
 
 @router.callback_query(F.data == "updatecity")
 async def cmd_updatecity(callback: CallbackQuery, state: FSMContext):
@@ -342,7 +354,7 @@ async def newcity(message: Message, bot: Bot):
     new = message.text
     user_id = message.from_user.id
     await request.update_profi_city(new, user_id)
-    await bot.send_message(cf.ADMIN_ID, f"Специалист с айди = <b>{user_id}</b> поменял город на {new}")
+    await bot.send_message(cf.ADMIN_ID, f"Специалист с айди = <b>{user_id}</b> поменял город на {new}", parse_mode="HTML")
     await message.answer("🤖Имя города изменино успешно",
                          reply_markup=InlineKeyboardMarkup(inline_keyboard=
                                                            [[InlineKeyboardButton(text="Меню",
@@ -361,11 +373,11 @@ async def newphone(message: Message, bot: Bot):
     new = message.text
     user_id = message.from_user.id
     await request.update_profi_phone(new, user_id)
-    await bot.send_message(cf.ADMIN_ID, f"Специалист с айди = <b>{user_id}</b> поменял номер телефона на {new}")
+    await bot.send_message(cf.ADMIN_ID, f"Специалист с айди = <b>{user_id}</b> поменял номер телефона на {new}", parse_mode="HTML")
     await message.answer("🤖Номер телефона изменен успешно",
-                                     reply_markup=InlineKeyboardMarkup(inline_keyboard=
-                                                                       [[InlineKeyboardButton(text="Меню",
-                                                                                              callback_data="Startprofi")]]))
+                         reply_markup=InlineKeyboardMarkup(inline_keyboard=
+                                                           [[InlineKeyboardButton(text="Меню",
+                                                                                  callback_data="Startprofi")]]))
 
 
 @router.callback_query(F.data == "pro search")
@@ -514,7 +526,7 @@ async def cmd_read_and_agree(callback: CallbackQuery, state: FSMContext, bot: Bo
         user_id = callback.from_user.id
         for item in chat_city:
             await request.add_profi(user_name, user_id, full_name, city, item, phone, self_cat, self_subcat, promo_link,
-                                   price)
+                                    price)
             await bot.send_message(cf.ADMIN_ID,
                                    f"Зарегистрировался новый специалист - @{callback.from_user.username} "
                                    f"-> <b>{full_name}</b>", parse_mode="HTML")
@@ -525,17 +537,19 @@ async def cmd_read_and_agree(callback: CallbackQuery, state: FSMContext, bot: Bo
         await callback.answer()
 
 
-
 @router.callback_query(F.data == "subscription")
 async def cmd_subscription(callback: CallbackQuery):
     await callback.message.edit_text(text.info_subscribe, reply_markup=kb.subscribe_info, parse_mode="HTML")
     await callback.answer()
 
+
 @router.callback_query(F.data.startswith("Evento"))
 async def cmd_dont_subscribe(callback: CallbackQuery):
-    await callback.message.edit_text(text.no_subscribe, parse_mode="HTML", reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Меню",
-                                                                                                  callback_data="Startprofi")]]))
+    await callback.message.edit_text(text.no_subscribe, parse_mode="HTML", reply_markup=InlineKeyboardMarkup(
+        inline_keyboard=[[InlineKeyboardButton(text="Меню",
+                                               callback_data="Startprofi")]]))
     await callback.answer()
+
 
 @router.callback_query(F.data == "advertisement")
 async def cmd_advertisement(callback: CallbackQuery):
@@ -547,6 +561,7 @@ async def cmd_advertisement(callback: CallbackQuery):
 async def advertisement2(callback: CallbackQuery, state: FSMContext):
     await state.set_state(ADMIN.advertisement)
     await callback.message.edit_text("🤖Напишите текст объявления")
+
 
 @router.message(ADMIN.advertisement)
 async def alladvertisement(message: Message, state: FSMContext, bot: Bot):
@@ -568,10 +583,12 @@ async def alladvertisement(message: Message, state: FSMContext, bot: Bot):
         except Exception:
             await message.answer("Произошла ошибка")
 
+
 @router.callback_query(F.data == "user advertisement")
 async def advertisement3(callback: CallbackQuery, state: FSMContext):
     await state.set_state(ADMIN.user_id)
     await callback.message.edit_text("🤖напишите айди получателя")
+
 
 @router.message(ADMIN.user_id)
 async def useradvertisement(message: Message, state: FSMContext):
@@ -580,6 +597,88 @@ async def useradvertisement(message: Message, state: FSMContext):
     await message.answer("🤖Напишите текст объявления")
 
 
+@router.callback_query(F.data == "updatebase")
+async def update_base_cmd(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    user_id = callback.from_user.id
+    res = await request.seach_profi(user_id)
+    count = 0
+    ids = []
+    msg = f"Записи в базе спецов:\n "
+    for i in res:
+        ids.append(i[0])
+        count += 1
+        msg += f"<b>{count}.</b>\n"
+        text = f"Чат города: {i[5]}\n  Категория: {i[6]}\n  Подкатегория: {i[7]}\n  Ссылка на промо: {i[9]}\n  Стоимость услуг: {i[10]}\n"
+        msg += text
+    msg += "<b>Выберите одну из записей в нашей базе. Для этого введите номер из списка 👆</b>"
+    await callback.message.edit_text(msg, parse_mode="HTML")
+    await state.set_state(UpdateBase.get_id)
+
+
+@router.message(UpdateBase.get_id)
+async def update_base_get_id(message: Message, state: FSMContext):
+    try:
+        user_id = message.from_user.id
+        res = await request.seach_profi(user_id)
+        count = 0
+        ids = []
+        for i in res:
+            ids.append(i[0])
+            count += 1
+        data = int(message.text)
+        if 1 <= data <= len(ids):
+            await message.answer("Что желаете изменить?", reply_markup=kb.update_base)
+            await state.update_data(id=data)
+        else:
+            raise Exception
+    except Exception:
+        await message.answer("Вы ввели неверный номер из списка. Попробуйте еще раз")
+
+
+@router.callback_query(F.data == "update_promo_link")
+async def update_base_promo_link(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text("Введите новую ссылку на промо материалы")
+    await state.set_state(UpdateBase.get_promo_link)
+
+
+@router.message(UpdateBase.get_promo_link)
+async def update_get_base_promo_link(message: Message, state: FSMContext, bot: Bot):
+    data = message.text
+    id = (await state.update_data())["id"]
+    await request.update_profi_promo_link(data, id)
+    await bot.send_message(cf.ADMIN_ID,
+                           f"Специалист с айди = <b>{message.from_user.id}</b> поменял цену ссылку на промо с айди {id} на {data}",
+                           parse_mode="HTML")
+    await message.answer("Данные успешно изменены")
+
+
+@router.callback_query(F.data == "update_price")
+async def update_base_price(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text("Введите новую цену")
+    await state.set_state(UpdateBase.get_price)
+
+
+@router.message(UpdateBase.get_price)
+async def update_get_base_price(message: Message, state: FSMContext, bot: Bot):
+    data = message.text
+    id = (await state.update_data())["id"]
+    await request.update_profi_price(data, id)
+    await bot.send_message(cf.ADMIN_ID, f"Специалист с айди = <b>{message.from_user.id}</b> поменял цену за свои услуги с айди {id} на {data}",
+                           parse_mode="HTML")
+    await message.answer("Данные успешно изменены")
+
+@router.callback_query(F.data == "question")
+async def update_base_price(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text("Задайте ваш вопрос")
+    await state.set_state(Question.get_question)
+
+
+@router.message(Question.get_question)
+async def update_get_base_price(message: Message, state: FSMContext, bot: Bot):
+    data = message.text
+    await bot.send_message(cf.ADMIN_ID, f"<b>Пользователь с айди = {message.from_user.id} задал вопрос</b>:\n{data}", parse_mode="HTML")
+    await message.answer("Вопрос отправлен успешно")
 
 
 @router.message(F.text.lower() == "тестреф")

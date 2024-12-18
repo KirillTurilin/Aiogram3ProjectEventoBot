@@ -102,3 +102,19 @@ async def seach_user_all():
         data = cursor.fetchall()
         db.commit()
         return data
+
+
+async def update_profi_promo_link(promo_link, id) -> None:
+    with sqlite3.connect("db.sqlite3") as db:
+        cursor = db.cursor()
+        query = """UPDATE Profies SET promo_link = ? WHERE id = ?;"""
+        cursor.execute(query, (promo_link, id))
+        db.commit()
+
+
+async def update_profi_price(price, id) -> None:
+    with sqlite3.connect("db.sqlite3") as db:
+        cursor = db.cursor()
+        query = """UPDATE Profies SET price = ? WHERE id = ?;"""
+        cursor.execute(query, (price, id))
+        db.commit()

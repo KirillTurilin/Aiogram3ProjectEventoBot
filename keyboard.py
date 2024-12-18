@@ -194,3 +194,8 @@ admin_panel = InlineKeyboardMarkup(
 admin_panel2 = InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text="Пользователю👤", callback_data="user advertisement")],
                      [InlineKeyboardButton(text="Всем👥", callback_data="all advertisement")]])
+
+update_base = InlineKeyboardMarkup(
+    inline_keyboard=[[InlineKeyboardButton(text="Чат города", callback_data="update_city"), InlineKeyboardButton(text="Категория", callback_data="update_self_cat")],
+                     [InlineKeyboardButton(text="Подкатегория", callback_data="update_self_subcat"), InlineKeyboardButton(text="Ссылка на промо", callback_data="update_promo_link")]
+                    , [InlineKeyboardButton(text="Стоимость услуг", callback_data="update_price")]])

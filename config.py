@@ -1,5 +1,5 @@
 TOKEN = "7751436875:AAGvazeK2--NGpsqFivFf5Wjgs1XWWvbfwM"
-ADMIN_ID = 6788405798
+ADMIN_ID = 5705842860
 city = ["ufacity", "krasnodarcity", "kazancity", "samaracity", "nizhny_novgorodcity", "novosibirskcity", "orenburgcity",
         "rostovcity", "chelyabinskcity", "tyumencity", "ekbcity", "permcity"]
 city_rus = {city[0]: "Уфа", city[1]: "Краснодар", city[2]: "Казань", city[3]: "Самара", city[4]: "Нижний Новгород",
